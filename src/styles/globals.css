@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #0ea5e9;
+  --secondary-color: #0c4a6e;
+}
+
+html,
+body {
+  direction: rtl;
+  font-family: 'Assistant', Arial, sans-serif;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+.rtl {
+  direction: rtl;
+}
