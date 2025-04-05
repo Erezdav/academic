@@ -1,20 +1,16 @@
-import { NextRequest } from 'next/server';
-import { languages, defaultLanguage } from './app/i18n/client';
+// מחק ייבוא של NextRequest אם לא נדרש
+// import { NextRequest } from 'next/server';
 
-export async function getTranslations(locale: string) {
-  try {
-    return (await import(`./app/i18n/locales/${locale}/common.json`)).default;
-  } catch (error) {
-    console.error(`Could not load translations for locale: ${locale}`, error);
-    return {};
-  }
-}
+// שנה את נתיב הייבוא
+import { languages } from '../i18n/client';
+// או, אם זה לא עובד, נסה:
+// import { languages, defaultLanguage } from '@/app/i18n/client';
 
-export async function getServerTranslations(locale: string) {
+export async function getServerTranslations() {
   try {
-    return (await import(`./app/i18n/locales/${locale}/common.json`)).default;
+    return (await import(`./locales/he/common.json`)).default;
   } catch (error) {
-    console.error(`Could not load translations for locale: ${locale}`, error);
+    console.error(`Could not load translations`, error);
     return {};
   }
 }

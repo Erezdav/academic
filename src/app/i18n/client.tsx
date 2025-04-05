@@ -1,17 +1,15 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { createContext, useContext, ReactNode } from 'react';
 
-// Define supported languages
-export const languages = ['he', 'en', 'ar'];
-export const defaultLanguage = 'he';
+// Define the language
+export const language = 'he';
+export const dir = 'rtl';
 
 // Define the shape of our i18n context
 interface I18nContextType {
   language: string;
   t: (key: string) => string;
-  changeLanguage: (lang: string) => void;
   dir: string;
 }
 
@@ -21,17 +19,11 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 // Create a provider component
 export function I18nProvider({ 
   children, 
-  initialLanguage = defaultLanguage,
   translations
 }: { 
   children: ReactNode;
-  initialLanguage: string;
   translations: Record<string, any>;
 }) {
-  const [language, setLanguage] = useState(initialLanguage);
-  const router = useRouter();
-  const pathname = usePathname();
-  
   // Get text based on key (using dot notation for nested objects)
   const t = (key: string): string => {
     const keys = key.split('.');
@@ -48,28 +40,8 @@ export function I18nProvider({
     return typeof value === 'string' ? value : key;
   };
   
-  // Change language and redirect to the same page in the new language
-  const changeLanguage = (lang: string) => {
-    if (!languages.includes(lang)) return;
-    
-    setLanguage(lang);
-    
-    // Get the current path segments
-    const segments = pathname.split('/');
-    
-    // Replace the language segment (first segment after empty string)
-    if (segments.length > 1) {
-      segments[1] = lang;
-      const newPath = segments.join('/');
-      router.push(newPath);
-    }
-  };
-  
-  // Determine text direction based on language
-  const dir = language === 'ar' || language === 'he' ? 'rtl' : 'ltr';
-  
   return (
-    <I18nContext.Provider value={{ language, t, changeLanguage, dir }}>
+    <I18nContext.Provider value={{ language, t, dir }}>
       {children}
     </I18nContext.Provider>
   );

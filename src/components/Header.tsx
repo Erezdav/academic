@@ -1,11 +1,10 @@
-'use client';
-
-import Link from 'next/link';
-import { useTranslation } from '../app/i18n/client';
-import { useState } from 'react';
-import { FaBars, FaTimes, FaWhatsapp } from 'react-icons/fa';
-import LanguageSwitcher from './LanguageSwitcher';
-
+ import { Metadata } from 'next';
+import { getServerTranslations } from './i18n/server';
+import Header from '@/components/Header';
+import Hero from '@/components/Hero';
+import Services from '@/components/Services';
+import CallToAction from '@/components/CallToAction';
+import Footer from '@/components/Footer';
 export default function Header() {
   const { t, language, dir } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);

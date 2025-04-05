@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getServerTranslations } from '../../i18n/server';
+import { getServerTranslations } from '../i18n/server';
 import Header from '@/components/Header';
 import Services from '@/components/Services';
 import PriceCalculator from '@/components/PriceCalculator';
