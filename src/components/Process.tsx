@@ -4,9 +4,9 @@ import { useTranslation } from '@/app/i18n/client';
 import { FaClipboardCheck, FaComments, FaFileAlt, FaCheckCircle } from 'react-icons/fa';
 
 export default function Process() {
-  const { t, dir } = useTranslation();
+  const { t } = useTranslation();
 
-  // צעדי התהליך - רק בעברית
+  // צעדי התהליך
   const steps = [
     {
       icon: <FaClipboardCheck size={40} />,
@@ -35,10 +35,10 @@ export default function Process() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 font-heading">
-            {t('process.title')}
+            תהליך העבודה
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {t('process.subtitle')}
+            תהליך עבודה פשוט ויעיל לקבלת עבודה אקדמית מושלמת
           </p>
         </div>
 

@@ -200,13 +200,12 @@ export default function PriceCalculator() {
                 className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md py-3 pr-10 pl-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 dir="rtl"
               >
-                               <option value="7">חודשיים +  </option>
-                <option value="5">חודשיים </option>
-                <option value="3">חודש</option>
-                <option value="2">ימים  21 </option>
-                <option value="1">ימים מהיום     14</option
-
-
+                <option value="14">חודשיים +</option>
+                <option value="7">חודשיים</option>
+                <option value="5">חודש</option>
+                <option value="3">21 ימים</option>
+                <option value="2">14 ימים מהיום</option>
+                <option value="1">דחוף - 7 ימים</option>
               </select>
             </div>
           </div>

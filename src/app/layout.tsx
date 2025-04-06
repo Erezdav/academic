@@ -25,7 +25,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="he" dir="rtl" className={`${inter.variable} ${heebo.variable}`}>
-      <body className="bg-gray-50 text-gray-900 min-h-screen">
+      <body 
+        className="bg-gray-50 text-gray-900 min-h-screen"
+        suppressHydrationWarning // הוספת מדכא אזהרות הידרציה
+      >
         <I18nProvider>
           {children}
         </I18nProvider>
