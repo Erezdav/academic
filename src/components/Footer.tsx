@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FaWhatsapp, FaEnvelope, FaPhone, FaMapMarkerAlt, FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 export default function Footer() {
-  const { t, language, dir } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-6">
@@ -36,27 +36,27 @@ export default function Footer() {
             <h3 className="text-xl font-bold mb-4">{t('footer.links.title')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href={`/${language}`} className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/" className="text-gray-400 hover:text-white transition-colors">
                   {t('footer.links.items.home')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${language}/services`} className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/services" className="text-gray-400 hover:text-white transition-colors">
                   {t('footer.links.items.services')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${language}/writers`} className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/writers" className="text-gray-400 hover:text-white transition-colors">
                   {t('footer.links.items.writers')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${language}/process`} className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/process" className="text-gray-400 hover:text-white transition-colors">
                   {t('footer.links.items.process')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${language}/contact`} className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
                   {t('footer.links.items.contact')}
                 </Link>
               </li>
@@ -68,22 +68,22 @@ export default function Footer() {
             <h3 className="text-xl font-bold mb-4">{t('footer.links.title')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href={`/${language}/blog`} className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/blog" className="text-gray-400 hover:text-white transition-colors">
                   {t('footer.links.items.blog')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${language}/faq`} className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/faq" className="text-gray-400 hover:text-white transition-colors">
                   {t('footer.links.items.faq')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${language}/terms`} className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
                   {t('footer.links.items.terms')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${language}/privacy`} className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
                   {t('footer.links.items.privacy')}
                 </Link>
               </li>
@@ -95,21 +95,21 @@ export default function Footer() {
             <h3 className="text-xl font-bold mb-4">{t('footer.contact.title')}</h3>
             <ul className="space-y-3">
               <li className="flex items-center">
-                <FaPhone className="text-primary-500 mr-2 rtl:ml-2 rtl:mr-0" />
+                <FaPhone className="text-primary-500 ml-2" />
                 <span className="text-gray-400">+972 50 123 4567</span>
               </li>
               <li className="flex items-center">
-                <FaEnvelope className="text-primary-500 mr-2 rtl:ml-2 rtl:mr-0" />
+                <FaEnvelope className="text-primary-500 ml-2" />
                 <span className="text-gray-400">info@academic-writing.com</span>
               </li>
               <li className="flex items-center">
-                <FaMapMarkerAlt className="text-primary-500 mr-2 rtl:ml-2 rtl:mr-0" />
-                <span className="text-gray-400">Tel Aviv, Israel</span>
+                <FaMapMarkerAlt className="text-primary-500 ml-2" />
+                <span className="text-gray-400">תל אביב, ישראל</span>
               </li>
               <li className="flex items-center">
-                <FaWhatsapp className="text-primary-500 mr-2 rtl:ml-2 rtl:mr-0" />
+                <FaWhatsapp className="text-primary-500 ml-2" />
                 <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                  WhatsApp
+                  ווטסאפ
                 </a>
               </li>
             </ul>

@@ -1,58 +1,32 @@
 'use client';
 
 import { useTranslation } from '../app/i18n/client';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Writers() {
-  const { t, language, dir } = useTranslation();
+  const { t } = useTranslation();
 
-  // Mock writer data - in a real application, this would come from an API or database
+  // נתוני כותבים לדוגמה - בגרסה אמיתית, אלה יגיעו מ-API או מסד נתונים
   const writers = [
     {
       id: 1,
       name: 'ד"ר יעל כהן',
-      nameEn: 'Dr. Yael Cohen',
-      nameAr: 'د. ياعيل كوهين',
       specialties: ['חינוך', 'פסיכולוגיה', 'סוציולוגיה'],
-      specialtiesEn: ['Education', 'Psychology', 'Sociology'],
-      specialtiesAr: ['التعليم', 'علم النفس', 'علم الاجتماع'],
       completedWorks: 124,
     },
     {
       id: 2,
       name: 'פרופ\' דוד לוי',
-      nameEn: 'Prof. David Levi',
-      nameAr: 'أ.د. دافيد ليفي',
       specialties: ['כלכלה', 'מנהל עסקים', 'מימון'],
-      specialtiesEn: ['Economics', 'Business Administration', 'Finance'],
-      specialtiesAr: ['الاقتصاد', 'إدارة الأعمال', 'التمويل'],
       completedWorks: 87,
     },
     {
       id: 3,
       name: 'ד"ר מיכל אברהם',
-      nameEn: 'Dr. Michal Avraham',
-      nameAr: 'د. ميخال أفراهام',
       specialties: ['משפטים', 'מדעי המדינה', 'היסטוריה'],
-      specialtiesEn: ['Law', 'Political Science', 'History'],
-      specialtiesAr: ['القانون', 'العلوم السياسية', 'التاريخ'],
       completedWorks: 156,
     }
   ];
-
-  // Get writer name and specialties based on current language
-  const getWriterName = (writer) => {
-    if (language === 'en') return writer.nameEn;
-    if (language === 'ar') return writer.nameAr;
-    return writer.name;
-  };
-
-  const getWriterSpecialties = (writer) => {
-    if (language === 'en') return writer.specialtiesEn;
-    if (language === 'ar') return writer.specialtiesAr;
-    return writer.specialties;
-  };
 
   return (
     <section className="py-16 bg-white">
@@ -80,7 +54,7 @@ export default function Writers() {
                       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
                     <p className="mt-2 text-primary-500 text-sm">
-                      {dir === 'rtl' ? 'איור בסגנון טל פרס יופיע כאן' : 'Illustration in Tal Peres style will appear here'}
+                      איור בסגנון טל פרס יופיע כאן
                     </p>
                   </div>
                 </div>
@@ -88,7 +62,7 @@ export default function Writers() {
               
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-2 text-gray-900">
-                  {getWriterName(writer)}
+                  {writer.name}
                 </h3>
                 
                 <div className="mb-4">
@@ -96,7 +70,7 @@ export default function Writers() {
                     {t('writers.specialties')}:
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {getWriterSpecialties(writer).map((specialty, index) => (
+                    {writer.specialties.map((specialty, index) => (
                       <span 
                         key={index} 
                         className="bg-primary-50 text-primary-700 text-xs px-2 py-1 rounded-full"
@@ -115,7 +89,7 @@ export default function Writers() {
                 </div>
                 
                 <Link 
-                  href={`/${language}/writers/${writer.id}`}
+                  href={`/writers/${writer.id}`}
                   className="block text-center bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-md transition-colors"
                 >
                   {t('writers.view_profile')}
@@ -127,7 +101,7 @@ export default function Writers() {
         
         <div className="text-center mt-10">
           <Link 
-            href={`/${language}/writers`}
+            href="/writers"
             className="inline-block bg-white border border-primary-500 text-primary-500 hover:bg-primary-50 py-2 px-6 rounded-md transition-colors"
           >
             {t('writers.view_all')}

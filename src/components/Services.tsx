@@ -5,9 +5,9 @@ import { FaGraduationCap, FaBook, FaFileAlt, FaSearch, FaEdit, FaNewspaper } fro
 import Link from 'next/link';
 
 export default function Services() {
-  const { t, language, dir } = useTranslation();
+  const { t } = useTranslation();
 
-  // Service items with icons
+  // אייקונים של השירותים
   const serviceIcons = [
     { key: 0, icon: <FaGraduationCap size={36} /> },
     { key: 1, icon: <FaFileAlt size={36} /> },
@@ -31,7 +31,6 @@ export default function Services() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {Array.from({ length: 6 }).map((_, index) => {
-            const serviceKey = `services.items.${index}`;
             return (
               <div 
                 key={index} 
@@ -48,12 +47,10 @@ export default function Services() {
                 </p>
                 <div className="mt-auto">
                   <Link 
-                    href={`/${language}/services#${index}`}
+                    href={`/services#${index}`}
                     className="text-primary-500 hover:text-primary-700 font-medium transition-colors"
                   >
-                    {dir === 'rtl' ? '← ' : ''}
-                    {t('services.view_all')}
-                    {dir === 'ltr' ? ' →' : ''}
+                    ← {t('services.view_all')}
                   </Link>
                 </div>
               </div>

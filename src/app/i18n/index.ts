@@ -1,10 +1,8 @@
-// src/app/i18n/index.ts
 'use client';
 
-import { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 
-// אובייקט התרגומים - המידע מגיע מתוך קובץ ה-JSON המקורי שלך
-// עם הזמן תוכל להעביר את התוכן המלא לכאן
+// מקור התרגומים בעברית בלבד
 const translations = {
   header: {
     logo: "אקדמיק",
@@ -16,8 +14,7 @@ const translations = {
       about: "אודות",
       contact: "צור קשר"
     },
-    cta: "הצעת מחיר",
-    language_switcher: "שפה"
+    cta: "הצעת מחיר"
   },
   hero: {
     title: "כתיבה אקדמית מקצועית",
@@ -56,11 +53,83 @@ const translations = {
     ],
     view_all: "לכל השירותים"
   },
-  meta: {
-    home: {
-      title: "אקדמיק - שירותי כתיבה אקדמית מקצועיים",
-      description: "שירותי כתיבה אקדמית מקצועיים לסטודנטים בכל הרמות והתחומים"
-    }
+  writers: {
+    title: "הכותבים המומחים שלנו",
+    subtitle: "צוות הכותבים שלנו כולל מומחים בעלי תארים מתקדמים במגוון תחומים",
+    specialties: "תחומי התמחות",
+    works: "עבודות שהושלמו",
+    view_profile: "פרופיל מלא",
+    view_all: "לכל הכותבים"
+  },
+  process: {
+    title: "תהליך העבודה",
+    subtitle: "תהליך עבודה פשוט ויעיל לקבלת עבודה אקדמית מושלמת",
+    steps: [
+      {
+        title: "הזמנה",
+        description: "מלא את טופס ההזמנה עם כל הפרטים הרלוונטיים"
+      },
+      {
+        title: "תשלום",
+        description: "בחר את שיטת התשלום המועדפת עליך"
+      },
+      {
+        title: "כתיבה",
+        description: "הכותב המתאים ביותר יתחיל לעבוד על העבודה שלך"
+      },
+      {
+        title: "עדכונים",
+        description: "תקבל עדכונים שוטפים על התקדמות העבודה"
+      },
+      {
+        title: "משלוח",
+        description: "העבודה המוכנה תישלח אליך לפני המועד האחרון"
+      },
+      {
+        title: "תיקונים",
+        description: "אם יש צורך בתיקונים, אנו נבצע אותם ללא תשלום נוסף"
+      }
+    ]
+  },
+  testimonials: {
+    title: "לקוחות ממליצים",
+    subtitle: "מה הלקוחות שלנו אומרים עלינו",
+    via_whatsapp: "הודעת וואטסאפ",
+    whatsapp_placeholder: "כאן יוצגו צילומי מסך של המלצות מוואטסאפ",
+    view_more: "לעוד המלצות"
+  },
+  cta: {
+    title: "מוכנים להתחיל?",
+    subtitle: "צור קשר עוד היום ונעזור לך להצליח בלימודים האקדמיים",
+    button: "קבל הצעת מחיר"
+  },
+  footer: {
+    about: {
+      title: "אודות",
+      description: "אנו מספקים שירותי כתיבה אקדמית מקצועיים לסטודנטים בכל הרמות והתחומים"
+    },
+    links: {
+      title: "קישורים מהירים",
+      items: {
+        home: "דף הבית",
+        services: "שירותים",
+        writers: "הכותבים שלנו",
+        process: "תהליך העבודה",
+        about: "אודות",
+        contact: "צור קשר",
+        blog: "בלוג",
+        faq: "שאלות נפוצות",
+        terms: "תנאי שימוש",
+        privacy: "מדיניות פרטיות"
+      }
+    },
+    contact: {
+      title: "צור קשר",
+      phone: "טלפון",
+      email: "אימייל",
+      address: "כתובת"
+    },
+    copyright: "כל הזכויות שמורות © 2025 אקדמיק"
   }
 };
 
@@ -95,10 +164,10 @@ const I18nContext = createContext<I18nContextType>({
 
 // ספק תרגום
 export function I18nProvider({ children }: { children: ReactNode }) {
-  return (
-    <I18nContext.Provider value={{ t, dir: 'rtl', language: 'he' }}>
-      {children}
-    </I18nContext.Provider>
+  return React.createElement(
+    I18nContext.Provider,
+    { value: { t, dir: 'rtl', language: 'he' } },
+    children
   );
 }
 

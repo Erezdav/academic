@@ -4,22 +4,22 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from '@/app/i18n/client';
 import { FaGraduationCap, FaClock, FaFileAlt, FaMoneyBillWave, FaPercent } from 'react-icons/fa';
 
-export default function PriceCalculator({ lng }) {
-  const { t, language, dir } = useTranslation();
+export default function PriceCalculator() {
+  const { t } = useTranslation();
   
   const [formData, setFormData] = useState({
     documentType: 'essay',
     academicLevel: 'undergraduate',
     deadline: '7',
     pages: 1,
-    paperType: 'theoretical' // Default to theoretical for seminar papers
+    paperType: 'theoretical' // ברירת מחדל לעבודות סמינריוניות
   });
   
   const [price, setPrice] = useState(0);
-  const [vatRate, setVatRate] = useState(18); // VAT rate as a percentage
+  const [vatRate, setVatRate] = useState(18); // שיעור המע"מ באחוזים
   const [priceWithoutVat, setPriceWithoutVat] = useState(0);
   
-  // Base prices per page (in NIS)
+  // מחירי בסיס לעמוד (בש"ח)
   const basePrices = {
     essay: {
       highschool: 120,
@@ -56,17 +56,17 @@ export default function PriceCalculator({ lng }) {
     }
   };
   
-  // Deadline multipliers
+  // מכפילי תאריך יעד
   const deadlineMultipliers = {
-    '1': 2.0,  // 1 day
-    '2': 1.8,  // 2 days
-    '3': 1.6,  // 3 days
-    '5': 1.4,  // 5 days
-    '7': 1.2,  // 7 days
-    '14': 1.0  // 14 days
+    '1': 2.0,  // יום אחד
+    '2': 1.8,  // יומיים
+    '3': 1.6,  // 3 ימים
+    '5': 1.4,  // 5 ימים
+    '7': 1.2,  // 7 ימים
+    '14': 1.0  // 14 ימים
   };
   
-  // Calculate price whenever form data changes
+  // חישוב מחיר בכל פעם שנתוני הטופס משתנים
   useEffect(() => {
     calculatePrice();
   }, [formData, vatRate]);
@@ -74,11 +74,11 @@ export default function PriceCalculator({ lng }) {
   const calculatePrice = () => {
     const { documentType, academicLevel, deadline, pages, paperType } = formData;
     
-    // Get base price
+    // קבלת מחיר בסיס
     let basePrice = 0;
     let actualDocType = documentType;
     
-    // Handle seminar paper types
+    // טיפול בסוגי עבודות סמינריוניות
     if (documentType === 'seminar_theoretical' || documentType === 'seminar_research') {
       actualDocType = documentType;
     } else if (documentType === 'seminar' && paperType === 'research') {
@@ -90,18 +90,18 @@ export default function PriceCalculator({ lng }) {
     if (basePrices[actualDocType] && basePrices[actualDocType][academicLevel]) {
       basePrice = basePrices[actualDocType][academicLevel];
     } else {
-      // Fallback to essay undergraduate if combination doesn't exist
+      // ברירת מחדל למאמר תואר ראשון אם הצירוף לא קיים
       basePrice = basePrices.essay.undergraduate;
     }
     
-    // Apply deadline multiplier
+    // החלת מכפיל תאריך יעד
     const multiplier = deadlineMultipliers[deadline] || 1.0;
     
-    // Calculate price without VAT
+    // חישוב מחיר ללא מע"מ
     const priceNoVat = basePrice * multiplier * pages;
     setPriceWithoutVat(Math.round(priceNoVat));
     
-    // Calculate total price with VAT
+    // חישוב מחיר כולל עם מע"מ
     const totalPrice = priceNoVat * (1 + vatRate / 100);
     setPrice(Math.round(totalPrice));
   };
@@ -116,30 +116,30 @@ export default function PriceCalculator({ lng }) {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real application, this would proceed to the order form
-    window.location.href = `/${language}/contact?type=${formData.documentType}&level=${formData.academicLevel}&deadline=${formData.deadline}&pages=${formData.pages}&price=${price}`;
+    // ביישום אמיתי, זה יעבור לטופס ההזמנה
+    window.location.href = `/contact?type=${formData.documentType}&level=${formData.academicLevel}&deadline=${formData.deadline}&pages=${formData.pages}&price=${price}`;
   };
   
-  // Show paper type selection only for seminar papers
+  // הצגת בחירת סוג מסמך רק לעבודות סמינריוניות
   const showPaperTypeSelection = formData.documentType === 'seminar';
   
   return (
     <div className="bg-white rounded-lg shadow-card p-6 md:p-8 animate-fade-in">
       <h3 className="text-2xl font-bold mb-6 text-gray-900 text-center">
-        {t('calculator.title')}
+        מחשבון מחירים
       </h3>
       <p className="text-center text-gray-600 mb-8">
-        {t('calculator.subtitle')}
+        קבל הערכת מחיר מיידית לעבודה שלך
       </p>
       
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="documentType" className="block text-gray-700 font-medium mb-2">
-              {t('calculator.document_type')}
+              סוג העבודה
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 rtl:right-0 rtl:left-auto flex items-center pl-3 rtl:pr-3 rtl:pl-0 pointer-events-none text-gray-500">
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
                 <FaFileAlt />
               </div>
               <select
@@ -147,25 +147,25 @@ export default function PriceCalculator({ lng }) {
                 name="documentType"
                 value={formData.documentType}
                 onChange={handleChange}
-                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md py-3 pl-10 rtl:pr-10 rtl:pl-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                dir={dir}
+                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md py-3 pr-10 pl-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                dir="rtl"
               >
-                <option value="essay">{t('calculator.types.essay')}</option>
-                <option value="research">{t('calculator.types.research')}</option>
-                <option value="thesis">{t('calculator.types.thesis')}</option>
-                <option value="dissertation">{t('calculator.types.dissertation')}</option>
-                <option value="seminar_theoretical">{t('calculator.types.seminar_theoretical')}</option>
-                <option value="seminar_research">{t('calculator.types.seminar_research')}</option>
+                <option value="essay">עבודה אקדמית</option>
+                <option value="research">עבודת מחקר</option>
+                <option value="thesis">תזה</option>
+                <option value="dissertation">דיסרטציה</option>
+                <option value="seminar_theoretical">עבודה סמינריונית עיונית</option>
+                <option value="seminar_research">עבודה סמינריונית מחקרית</option>
               </select>
             </div>
           </div>
           
           <div>
             <label htmlFor="academicLevel" className="block text-gray-700 font-medium mb-2">
-              {t('calculator.academic_level')}
+              רמה אקדמית
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 rtl:right-0 rtl:left-auto flex items-center pl-3 rtl:pr-3 rtl:pl-0 pointer-events-none text-gray-500">
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
                 <FaGraduationCap className="w-5 h-5" />
               </div>
               <select
@@ -173,23 +173,23 @@ export default function PriceCalculator({ lng }) {
                 name="academicLevel"
                 value={formData.academicLevel}
                 onChange={handleChange}
-                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md py-3 pl-10 rtl:pr-10 rtl:pl-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                dir={dir}
+                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md py-3 pr-10 pl-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                dir="rtl"
               >
-                <option value="highschool">{t('calculator.levels.highschool')}</option>
-                <option value="undergraduate">{t('calculator.levels.undergraduate')}</option>
-                <option value="masters">{t('calculator.levels.masters')}</option>
-                <option value="phd">{t('calculator.levels.phd')}</option>
+                <option value="highschool">תיכון</option>
+                <option value="undergraduate">תואר ראשון</option>
+                <option value="masters">תואר שני</option>
+                <option value="phd">תואר שלישי</option>
               </select>
             </div>
           </div>
           
           <div>
             <label htmlFor="deadline" className="block text-gray-700 font-medium mb-2">
-              {t('calculator.deadline')}
+              מועד הגשה
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 rtl:right-0 rtl:left-auto flex items-center pl-3 rtl:pr-3 rtl:pl-0 pointer-events-none text-gray-500">
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
                 <FaClock />
               </div>
               <select
@@ -197,25 +197,26 @@ export default function PriceCalculator({ lng }) {
                 name="deadline"
                 value={formData.deadline}
                 onChange={handleChange}
-                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md py-3 pl-10 rtl:pr-10 rtl:pl-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                dir={dir}
+                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md py-3 pr-10 pl-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                dir="rtl"
               >
-                <option value="14">{t('calculator.deadlines.days', { count: 14 })}</option>
-                <option value="7">{t('calculator.deadlines.days', { count: 7 })}</option>
-                <option value="5">{t('calculator.deadlines.days', { count: 5 })}</option>
-                <option value="3">{t('calculator.deadlines.days', { count: 3 })}</option>
-                <option value="2">{t('calculator.deadlines.days', { count: 2 })}</option>
-                <option value="1">{t('calculator.deadlines.day', { count: 1 })}</option>
+                               <option value="7">חודשיים +  </option>
+                <option value="5">חודשיים </option>
+                <option value="3">חודש</option>
+                <option value="2">ימים  21 </option>
+                <option value="1">ימים מהיום     14</option
+
+
               </select>
             </div>
           </div>
           
           <div>
             <label htmlFor="pages" className="block text-gray-700 font-medium mb-2">
-              {t('calculator.pages')}
+              מספר עמודים
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 rtl:right-0 rtl:left-auto flex items-center pl-3 rtl:pr-3 rtl:pl-0 pointer-events-none text-gray-500">
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
                 <FaFileAlt />
               </div>
               <input
@@ -226,52 +227,29 @@ export default function PriceCalculator({ lng }) {
                 max="100"
                 value={formData.pages}
                 onChange={handleChange}
-                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md py-3 pl-10 rtl:pr-10 rtl:pl-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                dir="ltr"
+                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md py-3 pr-10 pl-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                dir="rtl"
               />
             </div>
             <p className="text-sm text-gray-500 mt-1">
-              {t('calculator.page_description')}
+              עמוד = מתחיל ב 150 מילים
             </p>
           </div>
-        </div>
-        
-        {/* VAT Rate Admin Control (would be hidden in production) */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <div className="flex items-center mb-2">
-            <FaPercent className="text-gray-500 mr-2 rtl:ml-2 rtl:mr-0" />
-            <label htmlFor="vatRate" className="block text-gray-700 font-medium">
-              VAT Rate (%)
-            </label>
-          </div>
-          <input
-            type="number"
-            id="vatRate"
-            min="0"
-            max="30"
-            value={vatRate}
-            onChange={(e) => setVatRate(Number(e.target.value))}
-            className="w-full bg-white border border-gray-300 text-gray-900 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            dir="ltr"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Admin control to update VAT rate (currently {vatRate}%)
-          </p>
         </div>
         
         <div className="mt-8 p-4 bg-primary-50 rounded-lg border border-primary-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <FaMoneyBillWave className="text-primary-500 text-xl mr-2 rtl:ml-2 rtl:mr-0" />
-              <span className="font-medium text-gray-700">{t('calculator.estimated_price')}:</span>
+              <FaMoneyBillWave className="text-primary-500 text-xl ml-2" />
+              <span className="font-medium text-gray-700">מחיר משוער:</span>
             </div>
             <div className="text-2xl font-bold text-primary-600">
-              {price} {t('calculator.currency')}
+              {price} ₪
             </div>
           </div>
           <div className="flex justify-between mt-2 text-sm text-gray-500">
-            <span>Price without VAT: {priceWithoutVat} {t('calculator.currency')}</span>
-            <span>{t('calculator.vat_included', { vatRate })}</span>
+            <span>מחיר ללא מע"מ: {priceWithoutVat} ₪</span>
+            <span>כולל מע"מ ({vatRate}%)</span>
           </div>
         </div>
         
@@ -279,7 +257,7 @@ export default function PriceCalculator({ lng }) {
           type="submit"
           className="w-full mt-6 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-md transition-colors"
         >
-          {t('calculator.order_now')}
+          הזמן עכשיו
         </button>
       </form>
     </div>

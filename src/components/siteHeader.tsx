@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FaBars, FaTimes, FaWhatsapp } from 'react-icons/fa';
+import { FaBars, FaTimes, FaWhatsapp, FaCalculator } from 'react-icons/fa';
 
 // הגדרת טקסטים ישירות בקומפוננט ללא תלות במערכת i18n מורכבת
 const headerText = {
@@ -12,6 +12,7 @@ const headerText = {
     services: "שירותים",
     writers: "הכותבים שלנו",
     process: "תהליך העבודה",
+    calculator: "מחשבון מחירים",
     contact: "צור קשר"
   },
   cta: "הצעת מחיר"
@@ -46,6 +47,10 @@ export default function SiteHeader() {
             </Link>
             <Link href="/process" className="text-gray-700 hover:text-primary-500 transition-colors">
               {headerText.nav.process}
+            </Link>
+            <Link href="/calculator" className="text-gray-700 hover:text-primary-500 transition-colors flex items-center">
+              <FaCalculator className="ml-1" />
+              {headerText.nav.calculator}
             </Link>
             <Link href="/contact" className="text-gray-700 hover:text-primary-500 transition-colors">
               {headerText.nav.contact}
@@ -103,6 +108,14 @@ export default function SiteHeader() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 {headerText.nav.process}
+              </Link>
+              <Link 
+                href="/calculator" 
+                className="text-gray-700 hover:text-primary-500 transition-colors flex items-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <FaCalculator className="ml-1" />
+                {headerText.nav.calculator}
               </Link>
               <Link 
                 href="/contact" 

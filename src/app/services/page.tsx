@@ -1,32 +1,34 @@
 import { Metadata } from 'next';
-import { getServerTranslations } from '@/app/i18n/translations';
-import SiteHeader from '@/components/SiteHeader';
-import Hero from '@/components/Hero';
+import SiteHeader from '@/components/siteHeader';
+import Hero from '@/components/hero-component';
 import Services from '@/components/Services';
-import Writers from '@/components/Writers';
+import PriceCalculator from '@/components/PriceCalculator';
 import Process from '@/components/Process';
-import Testimonials from '@/components/Testimonials';
 import CallToAction from '@/components/CallToAction';
 import Footer from '@/components/Footer';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getServerTranslations();
-  
-  return {
-    title: t('meta.home.title'),
-    description: t('meta.home.description'),
-  };
-}
+export const metadata: Metadata = {
+  title: "השירותים שלנו - אקדמיק",
+  description: "מגוון שירותי כתיבה אקדמית מקצועיים, כולל עבודות סמינריוניות, תזות, דיסרטציות, סקירות ספרות ועוד",
+};
 
-export default async function Home() {
+export default function ServicesPage() {
   return (
     <main className="min-h-screen">
       <SiteHeader />
       <Hero />
       <Services />
-      <Writers />
+      
+      {/* מחשבון מחירים */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <PriceCalculator />
+          </div>
+        </div>
+      </section>
+      
       <Process />
-      <Testimonials />
       <CallToAction />
       <Footer />
     </main>

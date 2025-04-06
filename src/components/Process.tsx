@@ -1,63 +1,34 @@
 'use client';
 
-import { useTranslation } from '@/app/i18n/client' '@/app/i18n/client' '../app/i18n/client';
+import { useTranslation } from '@/app/i18n/client';
 import { FaClipboardCheck, FaComments, FaFileAlt, FaCheckCircle } from 'react-icons/fa';
 
 export default function Process() {
-  const { t, language, dir } = useTranslation();
+  const { t, dir } = useTranslation();
 
-  // Process steps
+  // צעדי התהליך - רק בעברית
   const steps = [
     {
       icon: <FaClipboardCheck size={40} />,
       title: 'שלב 1: הגשת בקשה',
-      titleEn: 'Step 1: Submit Request',
-      titleAr: 'الخطوة 1: تقديم الطلب',
-      description: 'מלא את טופס הבקשה עם כל הפרטים והדרישות של העבודה האקדמית שלך',
-      descriptionEn: 'Fill out the request form with all the details and requirements of your academic paper',
-      descriptionAr: 'املأ نموذج الطلب بجميع التفاصيل ومتطلبات ورقتك الأكاديمية'
+      description: 'מלא את טופס הבקשה עם כל הפרטים והדרישות של העבודה האקדמית שלך'
     },
     {
       icon: <FaComments size={40} />,
       title: 'שלב 2: התייעצות',
-      titleEn: 'Step 2: Consultation',
-      titleAr: 'الخطوة 2: الاستشارة',
-      description: 'נציג שלנו יצור איתך קשר לדיון בפרטים ולהתאמת הכותב המתאים ביותר',
-      descriptionEn: 'Our representative will contact you to discuss details and match the most suitable writer',
-      descriptionAr: 'سيتصل بك ممثلنا لمناقشة التفاصيل ومطابقة الكاتب الأنسب'
+      description: 'נציג שלנו יצור איתך קשר לדיון בפרטים ולהתאמת הכותב המתאים ביותר'
     },
     {
       icon: <FaFileAlt size={40} />,
       title: 'שלב 3: כתיבה ועדכונים',
-      titleEn: 'Step 3: Writing & Updates',
-      titleAr: 'الخطوة 3: الكتابة والتحديثات',
-      description: 'הכותב יתחיל בעבודה ויעדכן אותך באופן שוטף על ההתקדמות',
-      descriptionEn: 'The writer will begin working and update you regularly on progress',
-      descriptionAr: 'سيبدأ الكاتب العمل ويطلعك بانتظام على التقدم المحرز'
+      description: 'הכותב יתחיל בעבודה ויעדכן אותך באופן שוטף על ההתקדמות'
     },
     {
       icon: <FaCheckCircle size={40} />,
       title: 'שלב 4: מסירה וביקורת',
-      titleEn: 'Step 4: Delivery & Review',
-      titleAr: 'الخطوة 4: التسليم والمراجعة',
-      description: 'קבל את העבודה המוכנה ובקש תיקונים אם נדרש, עד שתהיה מרוצה לחלוטין',
-      descriptionEn: 'Receive the completed work and request revisions if needed, until you are completely satisfied',
-      descriptionAr: 'استلم العمل المكتمل واطلب المراجعات إذا لزم الأمر، حتى تكون راضيًا تمامًا'
+      description: 'קבל את העבודה המוכנה ובקש תיקונים אם נדרש, עד שתהיה מרוצה לחלוטין'
     }
   ];
-
-  // Get step content based on current language
-  const getStepTitle = (step) => {
-    if (language === 'en') return step.titleEn;
-    if (language === 'ar') return step.titleAr;
-    return step.title;
-  };
-
-  const getStepDescription = (step) => {
-    if (language === 'en') return step.descriptionEn;
-    if (language === 'ar') return step.descriptionAr;
-    return step.description;
-  };
 
   return (
     <section className="py-16 bg-gray-50">
@@ -90,11 +61,11 @@ export default function Process() {
                           {step.icon}
                         </div>
                         <h3 className="text-xl font-bold text-gray-900">
-                          {getStepTitle(step)}
+                          {step.title}
                         </h3>
                       </div>
                       <p className="text-gray-600">
-                        {getStepDescription(step)}
+                        {step.description}
                       </p>
                     </div>
                   </div>
