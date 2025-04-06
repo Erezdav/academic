@@ -1,55 +1,101 @@
 'use client';
 
-import { useState } from 'react';
-import { FaRobot, FaSearch, FaSpinner, FaFileUpload, FaFilePdf, FaFileWord } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaRobot, FaSearch, FaSpinner, FaFileUpload, FaFilePdf, FaFileWord, FaExternalLinkAlt } from 'react-icons/fa';
+
+// טיפוסים
+interface AIResponse {
+  id: string;
+  text: string;
+  sources?: {
+    title: string;
+    authors?: string;
+    year?: string | number;
+    url?: string;
+    relevance: number;
+    summary?: string;
+  }[];
+}
 
 export default function AISearch() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [aiResponses, setAiResponses] = useState<AIResponse[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadedDocuments, setUploadedDocuments] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState('default'); // לאפשר למשתמש לבחור מודל
+
+  // פונקציה לבצע בקשה ל-AI
+  const fetchAIResponse = async (query: string, documents?: any[]) => {
+    setIsSearching(true);
+    setError(null);
+    
+    try {
+      // יצירת FormData למקרה שנשלחים קבצים
+      const formData = new FormData();
+      formData.append('query', query);
+      formData.append('model', selectedModel);
+      
+      // הוספת קבצים אם יש
+      if (documents && documents.length > 0) {
+        documents.forEach((doc, index) => {
+          formData.append(`document_${index}`, doc.file);
+        });
+      }
+      
+      // פרומפט מותאם - ניתן להעביר בקשת API
+      const customPrompt = {
+        systemPrompt: `אתה עוזר אקדמי המתמחה בעזרה לסטודנטים בחיפוש מקורות אקדמיים ומענה על שאלות בתחום המחקר האקדמי.
+        תשובותיך צריכות להיות:
+        1. אקדמיות ומבוססות מחקר
+        2. עשירות במקורות ומידע רלוונטי
+        3. כתובות בעברית ברורה ומדויקת
+        4. שומרות על כבוד האקדמיה והמחקר
+        אם נשאלת על כתיבת עבודה אקדמית, הצע עזרה והפניה למקורות אבל לא תכתוב עבודה במקום הסטודנט.`
+      };
+      
+      formData.append('customPrompt', JSON.stringify(customPrompt));
+      
+      // שליחת הבקשה ל-API
+      console.log('שולח בקשה לשרת...');
+      const response = await fetch('/api/ai-search', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `שגיאת שרת: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('תשובה התקבלה:', data);
+      
+      // הוספת התשובה החדשה לרשימת התשובות
+      setAiResponses(prev => [
+        ...prev, 
+        {
+          id: Date.now().toString(),
+          text: data.response,
+          sources: data.sources || []
+        }
+      ]);
+    } catch (err) {
+      console.error('שגיאה בבקשה:', err);
+      setError(err instanceof Error ? err.message : 'אירעה שגיאה בתהליך החיפוש');
+    } finally {
+      setIsSearching(false);
+    }
+  };
   
-  // סימולציה של חיפוש AI
+  // טיפול בשליחת החיפוש
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     
-    setIsSearching(true);
-    setSearchResults([]);
-    
-    // סימולציה של תגובה מעוכבת מה-AI
-    setTimeout(() => {
-      const mockResults = [
-        {
-          id: 1,
-          title: "השפעת למידה מרחוק על הישגים אקדמיים",
-          snippet: "מחקר זה בוחן את ההשפעה של למידה מרחוק על הישגים אקדמיים של סטודנטים במוסדות להשכלה גבוהה בישראל במהלך תקופת הקורונה...",
-          relevance: 92,
-          source: "כתב עת ישראלי לחינוך (2022)",
-          url: "/sources/1",
-        },
-        {
-          id: 2,
-          title: "אסטרטגיות ללמידה יעילה בסביבה דיגיטלית",
-          snippet: "מאמר זה מציג אסטרטגיות מבוססות מחקר ללמידה יעילה בסביבה דיגיטלית, בהתבסס על עקרונות קוגניטיביים ופדגוגיים...",
-          relevance: 87,
-          source: "מגמות בפסיכולוגיה (2021)",
-          url: "/sources/2",
-        },
-        {
-          id: 3,
-          title: "השפעת טכנולוגיות למידה חדשניות על מוטיבציה של סטודנטים",
-          snippet: "מחקר זה בוחן כיצד שימוש בטכנולוגיות למידה חדשניות משפיע על מוטיבציה של סטודנטים. הממצאים מראים שילוב טכנולוגיות למידה מגביר את המוטיבציה...",
-          relevance: 81,
-          source: "מחקר חינוכי (2023)",
-          url: "/sources/3",
-        },
-      ];
-      
-      setSearchResults(mockResults);
-      setIsSearching(false);
-    }, 2000);
+    // פנייה ל-AI עם השאילתה
+    fetchAIResponse(searchQuery, uploadedDocuments);
   };
   
   // טיפול בהעלאת קבצים
@@ -58,19 +104,25 @@ export default function AISearch() {
       const file = e.target.files[0];
       setSelectedFile(file);
       
-      // סימולציה של עיבוד הקובץ
-      setTimeout(() => {
-        const newDocument = {
-          id: uploadedDocuments.length + 1,
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          uploadDate: new Date().toLocaleDateString(),
-        };
-        
-        setUploadedDocuments(prev => [...prev, newDocument]);
+      // בדיקת גודל הקובץ (מקסימום 5MB למודלים של Hugging Face)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('הקובץ גדול מדי. הגודל המקסימלי המותר הוא 5MB.');
         setSelectedFile(null);
-      }, 1500);
+        return;
+      }
+      
+      // הוספת הקובץ לרשימת הקבצים
+      const newDocument = {
+        id: uploadedDocuments.length + 1,
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        uploadDate: new Date().toLocaleDateString(),
+        file: file
+      };
+      
+      setUploadedDocuments(prev => [...prev, newDocument]);
+      setSelectedFile(null);
     }
   };
   
@@ -81,11 +133,24 @@ export default function AISearch() {
     return <FaFileUpload />;
   };
   
+  // פונקציה להסרת קובץ
+  const removeFile = (id: number) => {
+    setUploadedDocuments(prev => prev.filter(doc => doc.id !== id));
+  };
+  
+  // רשימת המודלים לבחירה
+  const models = [
+    { id: 'default', name: 'מודל מומלץ (Mistral)' },
+    { id: 'hebrew', name: 'מודל מותאם לעברית (Phi-2)' },
+    { id: 'academic', name: 'מודל למחקר אקדמי (Llama 2)' },
+    { id: 'fast', name: 'מודל מהיר (Gemma)' }
+  ];
+  
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="mb-8">
         <div className="flex items-center mb-4">
-          <FaRobot className="text-primary-500 text-2xl mr-2" />
+          <FaRobot className="text-primary-500 text-2xl ml-2" />
           <h3 className="text-xl font-bold">חיפוש חכם מבוסס AI</h3>
         </div>
         
@@ -95,6 +160,24 @@ export default function AISearch() {
         </p>
         
         <form onSubmit={handleSearch} className="mb-6">
+          <div className="mb-4">
+            <label htmlFor="model" className="block text-gray-700 font-medium mb-1">
+              בחר מודל AI:
+            </label>
+            <select
+              id="model"
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 mb-4"
+            >
+              {models.map(model => (
+                <option key={model.id} value={model.id}>
+                  {model.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
           <div className="flex">
             <input
               type="text"
@@ -106,7 +189,7 @@ export default function AISearch() {
             />
             <button
               type="submit"
-              className="bg-primary-500 hover:bg-primary-600 text-white px-6 rounded-l-md transition-colors disabled:bg-gray-400"
+              className="bg-primary-500 hover:bg-primary-600 text-white px-6 rounded-l-md transition-colors disabled:bg-gray-400 flex items-center justify-center"
               disabled={isSearching}
             >
               {isSearching ? <FaSpinner className="animate-spin" /> : <FaSearch />}
@@ -117,7 +200,7 @@ export default function AISearch() {
         <div className="mb-6">
           <h4 className="text-lg font-semibold mb-2">העלאת מסמכים לניתוח</h4>
           <p className="text-sm text-gray-600 mb-3">
-            העלה מסמך Word, PDF או טקסט כדי שה-AI יוכל לנתח אותו ולהציע מקורות רלוונטיים.
+            העלה מסמך Word, PDF או טקסט כדי שה-AI יוכל לנתח אותו ולהציע מקורות רלוונטיים (עד 5MB).
           </p>
           
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary-400 transition-colors">
@@ -132,7 +215,7 @@ export default function AISearch() {
               <div className="flex flex-col items-center">
                 <FaFileUpload className="text-gray-400 text-3xl mb-2" />
                 <p className="text-primary-500 font-medium">לחץ להעלאה או גרור לכאן קובץ</p>
-                <p className="text-xs text-gray-500 mt-1">מסמכי Word, PDF או טקסט (עד 10MB)</p>
+                <p className="text-xs text-gray-500 mt-1">מסמכי Word, PDF או טקסט (עד 5MB)</p>
               </div>
             </label>
             
@@ -145,6 +228,12 @@ export default function AISearch() {
               </div>
             )}
           </div>
+          
+          {error && (
+            <div className="mt-3 text-red-500 text-sm">
+              {error}
+            </div>
+          )}
         </div>
         
         {uploadedDocuments.length > 0 && (
@@ -157,7 +246,12 @@ export default function AISearch() {
                     {getFileIcon(doc.type)}
                     <span className="mr-2 text-gray-700">{doc.name}</span>
                   </div>
-                  <span className="text-xs text-gray-500">{doc.uploadDate}</span>
+                  <button 
+                    onClick={() => removeFile(doc.id)}
+                    className="text-red-500 hover:text-red-700 text-sm"
+                  >
+                    הסר
+                  </button>
                 </li>
               ))}
             </ul>
@@ -165,26 +259,61 @@ export default function AISearch() {
         )}
       </div>
       
-      {searchResults.length > 0 && (
+      {isSearching && (
+        <div className="text-center py-10">
+          <FaSpinner className="animate-spin text-primary-500 text-4xl mx-auto mb-4" />
+          <p className="text-gray-600">מחפש תשובה... (עשוי לקחת עד 30 שניות)</p>
+        </div>
+      )}
+      
+      {aiResponses.length > 0 && !isSearching && (
         <div>
-          <h4 className="text-lg font-semibold mb-4">תוצאות חיפוש</h4>
-          <div className="space-y-4">
-            {searchResults.map(result => (
-              <div key={result.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-1">
-                  <h5 className="text-lg font-semibold text-primary-700">{result.title}</h5>
-                  <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                    התאמה: {result.relevance}%
-                  </span>
+          <h4 className="text-lg font-semibold mb-4">תשובות AI</h4>
+          <div className="space-y-6">
+            {aiResponses.map(response => (
+              <div key={response.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="prose max-w-none mb-4">
+                  {/* כאן נעשה עיבוד לטקסט כדי לשמור על עיצוב הפסקאות */}
+                  {response.text.split('\n').map((paragraph, idx) => (
+                    <p key={idx} className={paragraph.trim() === '' ? 'h-4' : ''}>
+                      {paragraph}
+                    </p>
+                  ))}
                 </div>
-                <p className="text-sm text-gray-600 mb-2">{result.source}</p>
-                <p className="text-gray-700 mb-3">{result.snippet}</p>
-                <a 
-                  href={result.url} 
-                  className="text-primary-500 hover:underline text-sm font-medium"
-                >
-                  צפה במקור המלא
-                </a>
+                
+                {response.sources && response.sources.length > 0 && (
+                  <div className="mt-4 border-t pt-4">
+                    <h5 className="font-semibold text-gray-700 mb-2">מקורות:</h5>
+                    <ul className="space-y-2">
+                      {response.sources.map((source, idx) => (
+                        <li key={idx} className="flex items-start">
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2 mt-1">
+                            התאמה: {source.relevance}%
+                          </span>
+                          <div>
+                            <p className="font-medium text-primary-700">{source.title}</p>
+                            {source.authors && (
+                              <p className="text-sm text-gray-600">{source.authors} {source.year && `(${source.year})`}</p>
+                            )}
+                            {source.summary && (
+                              <p className="text-sm text-gray-600 mt-1">{source.summary}</p>
+                            )}
+                            {source.url && source.url !== '#' && (
+                              <a 
+                                href={source.url} 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary-500 hover:underline text-sm flex items-center mt-1"
+                              >
+                                צפה במקור <FaExternalLinkAlt className="mr-1 text-xs" />
+                              </a>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ))}
           </div>
