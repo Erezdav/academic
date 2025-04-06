@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '../app/i18n/client';
+import { useTranslation } from '@/app/i18n/client';
 import { useState } from 'react';
 import { FaUser, FaEnvelope, FaPhone, FaComments } from 'react-icons/fa';
 

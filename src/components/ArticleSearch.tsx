@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '../app/i18n/client';
+import { useTranslation } from '@/app/i18n/client';
 import Link from 'next/link';
 import { FaSearch, FaFilter, FaBook, FaGraduationCap, FaCalendarAlt } from 'react-icons/fa';
 import { useState } from 'react';

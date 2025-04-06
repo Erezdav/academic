@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '../app/i18n/client';
+import { useTranslation } from '@/app/i18n/client' '@/app/i18n/client' '../app/i18n/client';
 import { FaClipboardCheck, FaComments, FaFileAlt, FaCheckCircle } from 'react-icons/fa';
 
 export default function Process() {

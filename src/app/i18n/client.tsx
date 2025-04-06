@@ -1,57 +1,48 @@
+// src/app/i18n/client.tsx
 'use client';
 
-import { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
+import translations from './translations';
 
-// Define the language
-export const language = 'he';
-export const dir = 'rtl';
+// פונקציית תרגום פשוטה
+export const t = (key: string): string => {
+  const keys = key.split('.');
+  let value: any = translations;
+  
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k];
+    } else {
+      return key; // החזר את המפתח אם התרגום לא נמצא
+    }
+  }
+  
+  return typeof value === 'string' ? value : key;
+};
 
-// Define the shape of our i18n context
+// הגדר קונטקסט לתרגומים
 interface I18nContextType {
-  language: string;
   t: (key: string) => string;
-  dir: string;
+  dir: 'rtl';
+  language: string;
 }
 
-// Create the context
-const I18nContext = createContext<I18nContextType | undefined>(undefined);
+const I18nContext = createContext<I18nContextType>({
+  t,
+  dir: 'rtl',
+  language: 'he'
+});
 
-// Create a provider component
-export function I18nProvider({ 
-  children, 
-  translations
-}: { 
-  children: ReactNode;
-  translations: Record<string, any>;
-}) {
-  // Get text based on key (using dot notation for nested objects)
-  const t = (key: string): string => {
-    const keys = key.split('.');
-    let value = translations;
-    
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
-      } else {
-        return key; // Return the key if translation not found
-      }
-    }
-    
-    return typeof value === 'string' ? value : key;
-  };
-  
+// ספק תרגום
+export function I18nProvider({ children }: { children: ReactNode }) {
   return (
-    <I18nContext.Provider value={{ language, t, dir }}>
+    <I18nContext.Provider value={{ t, dir: 'rtl', language: 'he' }}>
       {children}
     </I18nContext.Provider>
   );
 }
 
-// Custom hook to use the i18n context
+// הוק לשימוש בתרגום
 export function useTranslation() {
-  const context = useContext(I18nContext);
-  if (context === undefined) {
-    throw new Error('useTranslation must be used within an I18nProvider');
-  }
-  return context;
+  return useContext(I18nContext);
 }

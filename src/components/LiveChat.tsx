@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslation } from '../app/i18n/client';
+import { useTranslation } from '@/app/i18n/client';
 import { FaPaperPlane, FaWhatsapp } from 'react-icons/fa';
 
 export default function LiveChat({ lng }) {

@@ -1,12 +1,23 @@
- import { Metadata } from 'next';
-import { getServerTranslations } from './i18n/server';
-import Header from '@/components/Header';
-import Hero from '@/components/Hero';
-import Services from '@/components/Services';
-import CallToAction from '@/components/CallToAction';
-import Footer from '@/components/Footer';
-export default function Header() {
-  const { t, language, dir } = useTranslation();
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { FaBars, FaTimes, FaWhatsapp } from 'react-icons/fa';
+
+// הגדרת טקסטים ישירות בקומפוננט ללא תלות במערכת i18n מורכבת
+const headerText = {
+  logo: "אקדמיק",
+  nav: {
+    home: "דף הבית",
+    services: "שירותים",
+    writers: "הכותבים שלנו",
+    process: "תהליך העבודה",
+    contact: "צור קשר"
+  },
+  cta: "הצעת מחיר"
+};
+
+export default function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -18,37 +29,36 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link href={`/${language}`} className="text-2xl font-bold text-primary-600">
-            {t('header.logo')}
+          <Link href="/" className="text-2xl font-bold text-primary-600">
+            {headerText.logo}
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6 rtl:space-x-reverse">
-            <Link href={`/${language}`} className="text-gray-700 hover:text-primary-500 transition-colors">
-              {t('header.nav.home')}
+            <Link href="/" className="text-gray-700 hover:text-primary-500 transition-colors">
+              {headerText.nav.home}
             </Link>
-            <Link href={`/${language}/services`} className="text-gray-700 hover:text-primary-500 transition-colors">
-              {t('header.nav.services')}
+            <Link href="/services" className="text-gray-700 hover:text-primary-500 transition-colors">
+              {headerText.nav.services}
             </Link>
-            <Link href={`/${language}/writers`} className="text-gray-700 hover:text-primary-500 transition-colors">
-              {t('header.nav.writers')}
+            <Link href="/writers" className="text-gray-700 hover:text-primary-500 transition-colors">
+              {headerText.nav.writers}
             </Link>
-            <Link href={`/${language}/process`} className="text-gray-700 hover:text-primary-500 transition-colors">
-              {t('header.nav.process')}
+            <Link href="/process" className="text-gray-700 hover:text-primary-500 transition-colors">
+              {headerText.nav.process}
             </Link>
-            <Link href={`/${language}/contact`} className="text-gray-700 hover:text-primary-500 transition-colors">
-              {t('header.nav.contact')}
+            <Link href="/contact" className="text-gray-700 hover:text-primary-500 transition-colors">
+              {headerText.nav.contact}
             </Link>
           </nav>
 
-          {/* CTA and Language Switcher */}
+          {/* CTA */}
           <div className="hidden md:flex items-center space-x-4 rtl:space-x-reverse">
-            <LanguageSwitcher />
             <Link 
-              href={`/${language}/contact`} 
+              href="/contact" 
               className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md transition-colors"
             >
-              {t('header.cta')}
+              {headerText.cta}
             </Link>
           </div>
 
@@ -56,7 +66,7 @@ export default function Header() {
           <button 
             className="md:hidden text-gray-700 focus:outline-none"
             onClick={toggleMenu}
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-label={isMenuOpen ? "סגור תפריט" : "פתח תפריט"}
           >
             {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
@@ -67,48 +77,47 @@ export default function Header() {
           <div className="md:hidden mt-4 py-4 border-t border-gray-200">
             <nav className="flex flex-col space-y-4">
               <Link 
-                href={`/${language}`} 
+                href="/" 
                 className="text-gray-700 hover:text-primary-500 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {t('header.nav.home')}
+                {headerText.nav.home}
               </Link>
               <Link 
-                href={`/${language}/services`} 
+                href="/services" 
                 className="text-gray-700 hover:text-primary-500 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {t('header.nav.services')}
+                {headerText.nav.services}
               </Link>
               <Link 
-                href={`/${language}/writers`} 
+                href="/writers" 
                 className="text-gray-700 hover:text-primary-500 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {t('header.nav.writers')}
+                {headerText.nav.writers}
               </Link>
               <Link 
-                href={`/${language}/process`} 
+                href="/process" 
                 className="text-gray-700 hover:text-primary-500 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {t('header.nav.process')}
+                {headerText.nav.process}
               </Link>
               <Link 
-                href={`/${language}/contact`} 
+                href="/contact" 
                 className="text-gray-700 hover:text-primary-500 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {t('header.nav.contact')}
+                {headerText.nav.contact}
               </Link>
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                <LanguageSwitcher />
+              <div className="pt-4 border-t border-gray-200">
                 <Link 
-                  href={`/${language}/contact`} 
+                  href="/contact" 
                   className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {t('header.cta')}
+                  {headerText.cta}
                 </Link>
               </div>
             </nav>
@@ -122,7 +131,7 @@ export default function Header() {
         target="_blank" 
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition-colors z-50"
-        aria-label="Contact us on WhatsApp"
+        aria-label="צור קשר בוואטסאפ"
       >
         <FaWhatsapp size={24} />
       </a>

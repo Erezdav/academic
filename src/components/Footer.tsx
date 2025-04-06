@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '../app/i18n/client';
+import { useTranslation } from '@/app/i18n/client';
 import Link from 'next/link';
 import { FaWhatsapp, FaEnvelope, FaPhone, FaMapMarkerAlt, FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 

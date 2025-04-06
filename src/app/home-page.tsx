@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
-import { getServerTranslations } from '@/app/i18n/translations';
-import SiteHeader from '@/components/SiteHeader';
-import Hero from '@/components/Hero';
+import { getServerTranslations } from '@/app/i18n';
+import SiteHeader from '@/components/siteHeader';
+import Hero from '@/components/hero-component';
 import Services from '@/components/Services';
 import Writers from '@/components/Writers';
 import Process from '@/components/Process';

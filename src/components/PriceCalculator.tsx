@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from '../app/i18n/client';
+import { useTranslation } from '@/app/i18n/client';
 import { FaGraduationCap, FaClock, FaFileAlt, FaMoneyBillWave, FaPercent } from 'react-icons/fa';
 
 export default function PriceCalculator({ lng }) {

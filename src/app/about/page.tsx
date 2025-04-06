@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { getServerTranslations } from '../i18n/server';
-import Header from '@/components/Header';
-import Hero from '@/components/Hero';
+import Header from '@/components/siteHeader';
+import Hero from '@/components/hero-component';
 import Services from '@/components/Services';
 import Writers from '@/components/Writers';
 import Process from '@/components/Process';
