@@ -1,132 +1,135 @@
-// src/app/api/ai-search/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { HfInference } from '@huggingface/inference';
-import { selectPrompt } from '@/lib/ai-prompts';
-import { extractSources } from '@/lib/sources-extractor';
 
-// יצירת קליינט Hugging Face עם מפתח API
-const hf = new HfInference(process.env.HUGGINGFACE_API_KEY || '');
+// Mock response for development when no API key is available
+const mockAIResponse = {
+  response: `שלום! אני העוזר האקדמי של אקדמיק. למרות שכרגע אין חיבור למודל AI, אני יכול לספק תשובה כללית.
 
-// רשימת מודלים מומלצים לשימוש בעברית
-const MODELS = {
-  default: 'mistralai/Mistral-7B-Instruct-v0.2', // מודל ברירת מחדל טוב
-  // מודלים טובים נוספים לעברית:
-  hebrew: 'microsoft/phi-2',        // תומך בעברית ומצוין לשאלות-תשובות
-  academic: 'meta-llama/Llama-2-13b-chat-hf', // טוב למחקר ותוכן אקדמי
-  fast: 'google/gemma-7b-it'        // מודל מהיר יותר
+אם יש לך שאלה אקדמית, אנסה לעזור במידת האפשר. לדוגמה, אם אתה מחפש עזרה בכתיבה אקדמית, הנה כמה טיפים כלליים:
+
+1. הגדר את מטרת העבודה בצורה ברורה
+2. ערוך סקירת ספרות מקיפה
+3. השתמש במקורות אמינים ועדכניים
+4. שמור על מבנה אקדמי תקני
+5. הקפד על ציטוטים ורפרנסים נכונים
+
+אם תרצה סיוע ספציפי יותר, אנא פרט את השאלה שלך.`,
+  sources: [
+    {
+      title: "טיפים לכתיבה אקדמית מוצלחת",
+      authors: "צוות אקדמיק",
+      year: 2024,
+      relevance: 100,
+      url: "/academic-writing-tips",
+      summary: "מדריך בסיסי לכתיבה אקדמית איכותית"
+    }
+  ]
 };
-
 export async function POST(req: NextRequest) {
-  try {
-    // קבלת הנתונים מהבקשה
-    const formData = await req.formData();
-    const query = formData.get('query') as string;
-    const customPromptJson = formData.get('customPrompt') as string;
-    const customPrompt = customPromptJson ? JSON.parse(customPromptJson) : null;
-    
-    // אם חסר מידע חיוני
-    if (!query) {
+    try {
+      // Validate API key
+      const apiKey = process.env.HUGGINGFACE_API_KEY;
+      if (!apiKey) {
+        console.error('❌ HUGGINGFACE_API_KEY is not set in .env.local');
+        throw new Error('API key is missing');
+      }
+  
+      // Initialize Hugging Face client
+      const hf = new HfInference(apiKey);
+  
+      // Parse form data
+      const formData = await req.formData();
+      const query = formData.get('query') as string;
+      
+      // Validate query
+      if (!query) {
+        console.error('❌ No query provided');
+        return NextResponse.json(
+          { error: 'לא סופקה שאילתה' },
+          { status: 400 }
+        );
+      }
+  
+      // Select model (with fallback)
+      const model = process.env.HF_MODEL || 'mistralai/Mistral-7B-Instruct-v0.2';
+      console.log(`🔍 Using model: ${model}`);
+  
+      // Prepare prompt
+      const fullPrompt = `
+      <s>[INST] אתה עוזר אקדמי מקצועי המסייע לסטודנטים במחקר אקדמי. 
+      תפקידך לספק מענה מעמיק, מדויק ומקצועי.
+  
+      הנחיות מרכזיות:
+      - ענה בעברית ברורה ומדויקת
+      - הבא דוגמאות ומקורות רלוונטיים
+      - שמור על רמה אקדמית גבוהה
+      - הצג מידע מאוזן ומעמיק
+  
+      השאלה: ${query}
+      
+      תשובה:[/INST]`;
+  
+      try {
+        // Generate response
+        const response = await hf.textGeneration({
+          model: model,
+          inputs: fullPrompt,
+          parameters: {
+            max_new_tokens: 500,
+            temperature: 0.7,
+            top_p: 0.9,
+            repetition_penalty: 1.1
+          }
+        });
+  
+        // Extract and clean response
+        const generatedText = response.generated_text || '';
+        const cleanedResponse = generatedText.includes('[/INST]') 
+          ? generatedText.split('[/INST]')[1].trim() 
+          : generatedText.trim();
+  
+        console.log('✅ Successfully generated response');
+  
+        return NextResponse.json({
+          response: cleanedResponse,
+          sources: [] // ניתן להוסיף מנגנון חילוץ מקורות בעתיד
+        });
+  
+      } catch (generationError) {
+        console.error('❌ Error during text generation:', generationError);
+        
+        // More detailed error logging
+        if (generationError instanceof Error) {
+          console.error('Error name:', generationError.name);
+          console.error('Error message:', generationError.message);
+          console.error('Error stack:', generationError.stack);
+        }
+  
+        return NextResponse.json(
+          { 
+            error: 'שגיאה בהפקת תשובת AI', 
+            details: generationError instanceof Error ? generationError.message : 'שגיאה לא מזוהה' 
+          },
+          { status: 500 }
+        );
+      }
+      
+    } catch (error) {
+      console.error('❌ שגיאת AI כללית:', error);
+      
+      // More detailed error logging
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+  
       return NextResponse.json(
-        { error: 'לא סופקה שאילתה' },
-        { status: 400 }
+        { 
+          error: 'אירעה שגיאה בעיבוד הבקשה', 
+          details: error instanceof Error ? error.message : 'שגיאה לא מזוהה' 
+        },
+        { status: 500 }
       );
     }
-    
-    // מיצוי קבצים מה-FormData אם יש
-    const documents: { filename: string; content: string }[] = [];
-    
-    for (const [key, value] of formData.entries()) {
-      if (key.startsWith('document_') && value instanceof File) {
-        const file = value as File;
-        // קריאת תוכן הקובץ (במקרה שהוא טקסטואלי)
-        const content = await file.text();
-        documents.push({
-          filename: file.name,
-          content: content
-        });
-      }
-    }
-    
-    // יצירת פרומפט
-    // בחירת פרומפט מותאם לסוג השאלה
-    let systemPrompt = customPrompt?.systemPrompt || selectPrompt(query);
-    
-    // הוספת מידע על הקבצים אם יש
-    if (documents.length > 0) {
-      systemPrompt += `\n\nהמשתמש העלה את הקבצים הבאים שעליך להתייחס אליהם בתשובתך:
-      ${documents.map(doc => `- ${doc.filename}`).join('\n')}`;
-    }
-    
-    // בניית הפרומפט לפי הפורמט שמודלים של Hugging Face מצפים לו
-    let fullPrompt = `<s>[INST] ${systemPrompt}\n\nשאלה: ${query}\n\n`;
-    
-    if (documents.length > 0) {
-      fullPrompt += `תוכן הקבצים שהועלו:\n\n`;
-      documents.forEach(doc => {
-        // הגבלת אורך תוכן הקובץ כדי למנוע חריגה ממגבלות המודל
-        const maxContentLength = 1500; // הגבלה קטנה יותר מאשר עם Claude
-        fullPrompt += `===== תחילת קובץ: ${doc.filename} =====\n`;
-        fullPrompt += doc.content.substring(0, maxContentLength);
-        if (doc.content.length > maxContentLength) fullPrompt += '... (המשך הקובץ הושמט)';
-        fullPrompt += `\n===== סוף קובץ: ${doc.filename} =====\n\n`;
-      });
-    }
-    
-    fullPrompt += `עבור שאלה זו, אנא ספק תשובה מקיפה ומבוססת מחקר. 
-    כלול מקורות רלוונטיים ומידע מהימן. 
-    אם אתה מזכיר מאמרים או מקורות אקדמיים, אנא כלול את פרטי המקור בפורמט הבא:
-    
-    SOURCE: [שם המקור]
-    AUTHORS: [שמות המחברים]
-    YEAR: [שנת פרסום]
-    RELEVANCE: [אחוז רלוונטיות]
-    URL: [קישור למקור אם זמין]
-    SUMMARY: [תקציר קצר של המקור]
-    [/INST]`;
-    
-    // הגדרת המודל לפי הגדרות הסביבה או ברירת מחדל
-    const model = process.env.HF_MODEL || MODELS.default;
-    const maxTokens = parseInt(process.env.MAX_TOKENS || '1024');
-    const temperature = parseFloat(process.env.TEMPERATURE || '0.7');
-    
-    console.log(`שולח בקשה למודל ${model}...`);
-    
-    // קריאה ל-Hugging Face API
-    const response = await hf.textGeneration({
-      model: model,
-      inputs: fullPrompt,
-      parameters: {
-        max_new_tokens: maxTokens,
-        temperature: temperature,
-        top_p: 0.95,
-        repetition_penalty: 1.1,
-        do_sample: true
-      }
-    });
-    
-    // קבלת הטקסט מהתשובה
-    const generatedText = response.generated_text || '';
-    
-    // חילוץ החלק הרלוונטי מהתשובה (רק האיטרציה האחרונה)
-    // חלק מהמודלים עשויים להחזיר את הפרומפט המקורי בתחילת התשובה
-    const cleanedResponse = generatedText.includes('[/INST]') 
-      ? generatedText.split('[/INST]')[1].trim() 
-      : generatedText;
-    
-    // חילוץ מקורות מהתגובה באמצעות המודול המיוחד
-    const sources = extractSources(cleanedResponse);
-    
-    // החזרת התשובה והמקורות
-    return NextResponse.json({
-      response: cleanedResponse,
-      sources
-    });
-    
-  } catch (error) {
-    console.error('שגיאה בעיבוד בקשת AI:', error);
-    return NextResponse.json(
-      { error: 'אירעה שגיאה במהלך עיבוד הבקשה', details: error.message },
-      { status: 500 }
-    );
   }
-}
